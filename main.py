@@ -58,13 +58,14 @@ def run_sequential_test():
     print("Відстані:\n", distS)
 
 
-def run_comparison_test():
+def run_comparison_test(warmup=20):
     n_threads = 32
     nodeNumber = int(input("Введіть кількість вершин: "))
     graph = generate_complex_graph(nodeNumber)
-    distS, serialExecutionTime = serialDijkstra.execution_time(nodeNumber, graph)
+    for i in range(warmup):
+        distS, serialExecutionTime = serialDijkstra.execution_time(nodeNumber, graph)
+        distP, cudaExecutionTime = parallelDijkstra.execution_time(nodeNumber, graph, n_threads)
     print("Час виконання послідовного алгоритму: ", serialExecutionTime)
-    distP, cudaExecutionTime = parallelDijkstra.execution_time(nodeNumber, graph, n_threads)
     #print("Відстані послідовно:", distS, "\nВідстані паралельно:", distP)
     print(f"Час виконання паралельного алгоритму з {n_threads} потоків: ", cudaExecutionTime)
     print("Чи результати послідовного та паралельного алгоритмів збігаються:", np.array_equal(distS, distP))
@@ -72,4 +73,4 @@ def run_comparison_test():
 
 if __name__ == "__main__":
     #run_sequential_test()
-    run_comparison_test()
+    run_comparison_test(1)
